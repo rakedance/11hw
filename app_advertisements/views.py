@@ -6,14 +6,24 @@ from django.contrib.auth.decorators import login_required
 
 
 def index(request):
-    advertisements = Advertisement.objects.all()
-    context = {'advertisements': advertisements}
+    title = request.GET.get('query')
+    if title:
+        advertisements = Advertisement.objects.filter(title__icontains=title)
+    else:
+        advertisements = Advertisement.objects.all()
+    context = {'advertisements': advertisements, 'title': title}
     return render(request, 'app_advertisements/index.html', context)
 
 
 def top_sellers(request):
     return render(request, 'app_advertisements/top-sellers.html')
 
+def advertisement_detail(request, pk):
+    advertisement = Advertisement.objects.get(id=pk)
+    context = {
+        'adv': advertisement
+    }
+    return render(request, 'app_advertisements/advertisement.html', context)
 
 @login_required(login_url=reverse_lazy('login'))
 def advertisement_post(request):
